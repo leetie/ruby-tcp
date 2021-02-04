@@ -1,7 +1,12 @@
+require "json"
+# require "colorize"
 require "socket"
 class Client
-  def initialize( server )
-    @server = server
+  def initialize
+    @remote_ip = nil
+    @remote_port = nil
+    self.get_config
+    @server = TCPSocket.new(@remote_ip.to_s, @remote_port.to_i)
     @request = nil
     @response = nil
     listen
@@ -28,7 +33,25 @@ class Client
       }
     end
   end
+
+  def get_config
+    file = File.read("./config.json")
+    hash = JSON.parse(file)
+    if hash["remote_host_ip"].nil? || hash["remote_host_port"].nil?
+      puts "Please enter Server IP"
+      ip = gets.chomp
+      hash["remote_host_ip"] = ip
+      puts "Please enter Server Port"
+      port = gets.chomp
+      hash["remote_host_port"] = port
+    end
+    @remote_ip = hash["remote_host_ip"]
+    @remote_port = hash["remote_host_port"]
+      
+    File.open("config.json", "w+") do |f|
+      f.write(JSON.dump(hash))
+    end
+  end
 end
 
-server = TCPSocket.new("#{ENV["REMOTE_HOST"]}", ENV["REMOTE_PORT"].to_i)
-Client.new( server )
+Client.new

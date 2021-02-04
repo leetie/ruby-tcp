@@ -1,4 +1,5 @@
 require "socket"
+# require "colorize"
 class Server
   def initialize( port, ip )
     @server = TCPServer.open(  port )
@@ -11,6 +12,7 @@ class Server
     run
   end
 
+  # if user discos, server must be restarted. attempts to write to nonexisting tcpstream?? remove user from @connections[:clients] when they disco
   def run
     loop {
       Thread.start(@server.accept) do | client |
@@ -18,10 +20,12 @@ class Server
         @connections[:clients].each do |other_name, other_client|
           if nick_name == other_name || client == other_client
             client.puts "This username already exist"
-            Thread.kill self # lol
+            Thread.exit # lol
           end
         end
         puts "#{nick_name} #{client}"
+        puts client.addr
+        puts "#########################################################"
         @connections[:clients][nick_name] = client
         client.puts "Connection established, Thank you for joining! Happy chatting"
         listen_user_messages( nick_name, client )
@@ -41,6 +45,8 @@ class Server
   end
 end
 
-# port only, ignore below
+# port only on docker image
 # this file to be run on remote server
-# Server.new( 80, "localhost" )
+# Server.new(80)
+
+Server.new(8080, "127.0.0.1")
