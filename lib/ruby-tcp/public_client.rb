@@ -6,7 +6,7 @@ class Client
     @remote_ip = nil
     @remote_port = nil
     self.get_config
-    @server = TCPSocket.new(@remote_ip.to_s, @remote_port.to_i)
+    @server = TCPSocket.new(@remote_ip, @remote_port.to_i)
     @request = nil
     @response = nil
     listen

@@ -45,8 +45,6 @@ class Server
   end
 end
 
-# port only on docker image
-# this file to be run on remote server
-# Server.new(80)
-
-Server.new(8080, "127.0.0.1")
+puts "Enter Port to listen on"
+port = gets.chomp.to_i
+Server.new(port, "localhost")
